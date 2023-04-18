@@ -8,6 +8,7 @@ assert_no_reanimated2_with_new_architecture(reanimated_package_json)
 assert_latest_react_native_with_new_architecture(config, reanimated_package_json)
 
 fabric_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == '1'
+use_hermes = ENV['USE_HERMES'] == '1'
 folly_prefix = config[:react_native_minor_version] >= 64 ? 'RCT-' : ''
 folly_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -DREACT_NATIVE_MINOR_VERSION=' + config[:react_native_minor_version].to_s
 folly_compiler_flags = folly_flags + ' ' + '-Wno-comma -Wno-shorten-64-to-32'
@@ -61,6 +62,12 @@ Pod::Spec.new do |s|
     s.dependency "RCT-Folly"
   else
     s.dependency "#{folly_prefix}Folly"
+  end
+  if use_hermes
+    s.dependency 'React-hermes'
+    s.dependency 'hermes-engine'
+  else
+    s.dependency 'React-jsc'
   end
   s.dependency "RCTRequired"
   s.dependency "RCTTypeSafety"
